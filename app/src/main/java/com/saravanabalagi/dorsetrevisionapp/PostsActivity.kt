@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.saravanabalagi.dorsetrevisionapp.models.Post
 import kotlinx.android.synthetic.main.activity_posts.*
 import okhttp3.Call
 import okhttp3.Callback
@@ -18,7 +19,15 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
         posts_recycler_view.layoutManager = LinearLayoutManager(this)
         posts_recycler_view.adapter = PostsAdapter(this)
 
-        makeRequest()
+//        makeRequest()
+
+        val post = Post().apply {
+            id = 100
+            title = "My title"
+            body = "Some long body"
+            userId = 0
+        }
+        Log.i(POSTS_ACTIVITY_LOG_KEY, post.toString())
     }
 
     private fun makeRequest() {
