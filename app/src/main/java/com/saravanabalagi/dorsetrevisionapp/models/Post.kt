@@ -5,6 +5,7 @@ class Post {
     var title: String = ""
     var body: String = ""
     var userId: Int = -1
+    var user: User = User()
 
     override fun toString(): String {
         return "Post $id: $title"

@@ -63,7 +63,10 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                 if (response.isSuccessful && response.body != null) {
                     val responseBody = response.body!!.string()
                     val posts = Gson().fromJson(responseBody, Array<Post>::class.java)
-                    posts.forEach { Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString()) }
+                    posts.forEach {
+                        it.user = users.filter { e -> e.id == it.userId }[0]
+                        Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString())
+                    }
 
                     // ui updates
                     Handler(Looper.getMainLooper()).post {
@@ -72,7 +75,7 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                         loading_text.visibility = View.GONE
                         posts_recycler_view.visibility = View.VISIBLE
                         posts_recycler_view.layoutManager = LinearLayoutManager(this@PostsActivity)
-                        posts_recycler_view.adapter = PostsAdapter(posts, users, this@PostsActivity)
+                        posts_recycler_view.adapter = PostsAdapter(posts, this@PostsActivity)
                     }
 
                 } else {

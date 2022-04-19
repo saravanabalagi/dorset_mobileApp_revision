@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.saravanabalagi.dorsetrevisionapp.models.Post
 import com.saravanabalagi.dorsetrevisionapp.models.User
 
-class PostsAdapter(private val posts: Array<Post>, private val users: Array<User>, private val context: Context): RecyclerView.Adapter<PostViewHolder>() {
+class PostsAdapter(private val posts: Array<Post>, private val context: Context): RecyclerView.Adapter<PostViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.template_post, parent, false)
@@ -22,10 +22,7 @@ class PostsAdapter(private val posts: Array<Post>, private val users: Array<User
         val postUser = holder.itemView.findViewById<TextView>(R.id.post_user)
         postTitle.text = currentPost.title
         postBody.text = currentPost.body
-
-        val currentUserId = currentPost.userId
-        val currentUser = users.filter { it.id == currentUserId }[0]
-        postUser.text = currentUser.name
+        postUser.text = currentPost.user.name
     }
 
     override fun getItemCount(): Int {
