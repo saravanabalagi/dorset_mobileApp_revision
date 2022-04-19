@@ -32,13 +32,13 @@ class PostsAdapter(private val context: Context): RecyclerView.Adapter<PostViewH
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val postContent = holder.itemView.findViewById<TextView>(R.id.post_content)
-        if (position == 3) {
-            postContent.text = context.getString(R.string.template_post_content, position.toFloat())
+        if (position > 3) {
+            postContent.text = context.getString(R.string.template_post_content, position)
         }
     }
 
     override fun getItemCount(): Int {
-        return 5
+        return 15
     }
 }
 
