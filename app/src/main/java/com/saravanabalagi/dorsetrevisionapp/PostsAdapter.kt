@@ -18,8 +18,10 @@ class PostsAdapter(private val posts: Array<Post>, private val context: Context)
         val currentPost: Post = posts[position]
         val postTitle = holder.itemView.findViewById<TextView>(R.id.post_title)
         val postBody = holder.itemView.findViewById<TextView>(R.id.post_body)
+        val postUser = holder.itemView.findViewById<TextView>(R.id.post_user)
         postTitle.text = currentPost.title
         postBody.text = currentPost.body
+        postUser.text = currentPost.userId.toString()
     }
 
     override fun getItemCount(): Int {
