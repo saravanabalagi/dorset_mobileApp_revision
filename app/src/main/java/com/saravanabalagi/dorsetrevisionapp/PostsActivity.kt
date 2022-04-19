@@ -23,7 +23,7 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
 
         Handler(Looper.getMainLooper()).postDelayed({
             makeRequest()
-        }, 5000)
+        }, 2000)
 
     }
 
@@ -49,7 +49,7 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                         loading_text.visibility = View.GONE
                         posts_recycler_view.visibility = View.VISIBLE
                         posts_recycler_view.layoutManager = LinearLayoutManager(this@PostsActivity)
-                        posts_recycler_view.adapter = PostsAdapter(this@PostsActivity)
+                        posts_recycler_view.adapter = PostsAdapter(posts, this@PostsActivity)
                     }
 
                 } else {
