@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.saravanabalagi.dorsetrevisionapp.models.Post
 import kotlinx.android.synthetic.main.activity_posts.*
 import okhttp3.Call
@@ -19,15 +20,7 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
         posts_recycler_view.layoutManager = LinearLayoutManager(this)
         posts_recycler_view.adapter = PostsAdapter(this)
 
-//        makeRequest()
-
-        val post = Post().apply {
-            id = 100
-            title = "My title"
-            body = "Some long body"
-            userId = 0
-        }
-        Log.i(POSTS_ACTIVITY_LOG_KEY, post.toString())
+        makeRequest()
     }
 
     private fun makeRequest() {
@@ -36,15 +29,16 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object: Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.i(POSTS_ACTIVITY_LOG_KEY, "Request Failed: ${e.message}")
+                Log.e(POSTS_ACTIVITY_LOG_KEY, "Request Failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful && response.body != null) {
                     val responseBody = response.body!!.string()
-                    Log.i(POSTS_ACTIVITY_LOG_KEY, "response received: $responseBody")
+                    val posts = Gson().fromJson(responseBody, Array<Post>::class.java)
+                    posts.forEach { Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString()) }
                 } else {
-                    Log.i(POSTS_ACTIVITY_LOG_KEY, "response received, Status code: ${response.code}")
+                    Log.e(POSTS_ACTIVITY_LOG_KEY, "response received, Status code: ${response.code}")
                 }
             }
         })
