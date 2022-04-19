@@ -13,6 +13,7 @@ import com.saravanabalagi.dorsetrevisionapp.models.Post
 import com.saravanabalagi.dorsetrevisionapp.models.User
 import kotlinx.android.synthetic.main.activity_posts.*
 import okhttp3.*
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
@@ -24,11 +25,27 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
         super.onCreate(savedInstanceState)
 
         client = OkHttpClient()
+        makeAddPostRequest()
         makeUsersRequest()
-        Handler(Looper.getMainLooper()).postDelayed({
-            makePostsRequest()
-        }, 2000)
+    }
 
+    private fun makeAddPostRequest() {
+        val url = "https://jsonplaceholder.typicode.com/users"
+        val newPost = Post().apply {
+            userId = 3
+            body = "Some body"
+            title = "Some title"
+        }
+        val request = Request.Builder().url(url).post(Gson().toJson(newPost).toRequestBody()).build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(POSTS_ACTIVITY_LOG_KEY, "AddPost Failed: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.i(POSTS_ACTIVITY_LOG_KEY, "AddPost successful, response received, Status code: ${response.code}")
+            }
+        })
     }
 
     private fun makeUsersRequest() {
@@ -44,6 +61,7 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                     val responseBody = response.body!!.string()
                     users = Gson().fromJson(responseBody, Array<User>::class.java)
                     users.forEach { Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString()) }
+                    makePostsRequest()
                 } else {
                     Log.e(POSTS_ACTIVITY_LOG_KEY, "Users response received, Status code: ${response.code}")
                 }
@@ -83,6 +101,5 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                 }
             }
         })
-
     }
 }
