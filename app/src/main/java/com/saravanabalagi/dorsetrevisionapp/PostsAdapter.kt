@@ -15,10 +15,11 @@ class PostsAdapter(private val posts: Array<Post>, private val context: Context)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val postContent = holder.itemView.findViewById<TextView>(R.id.post_content)
-        if (position > 3) {
-            postContent.text = context.getString(R.string.template_post_content, position)
-        }
+        val currentPost: Post = posts[position]
+        val postTitle = holder.itemView.findViewById<TextView>(R.id.post_title)
+        val postBody = holder.itemView.findViewById<TextView>(R.id.post_body)
+        postTitle.text = currentPost.title
+        postBody.text = currentPost.body
     }
 
     override fun getItemCount(): Int {
