@@ -3,4 +3,5 @@
     <string name="main_activity_open_new_page_button">Open New Page</string>
     <string name="main_activity_hello">Hello, you are in Main Activity</string>
     <string name="template_post_content">Content Position %1$06d. Some other content</string>
+    <string name="activity_posts_loading">Loading…</string>
 </resources>

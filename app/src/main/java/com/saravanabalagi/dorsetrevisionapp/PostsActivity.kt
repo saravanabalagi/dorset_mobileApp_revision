@@ -1,7 +1,11 @@
 package com.saravanabalagi.dorsetrevisionapp
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -17,10 +21,10 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        posts_recycler_view.layoutManager = LinearLayoutManager(this)
-        posts_recycler_view.adapter = PostsAdapter(this)
+        Handler(Looper.getMainLooper()).postDelayed({
+            makeRequest()
+        }, 5000)
 
-        makeRequest()
     }
 
     private fun makeRequest() {
@@ -37,6 +41,17 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                     val responseBody = response.body!!.string()
                     val posts = Gson().fromJson(responseBody, Array<Post>::class.java)
                     posts.forEach { Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString()) }
+
+                    // ui updates
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(this@PostsActivity, "Posts parsing complete, Total posts: ${posts.size}", Toast.LENGTH_LONG).show()
+
+                        loading_text.visibility = View.GONE
+                        posts_recycler_view.visibility = View.VISIBLE
+                        posts_recycler_view.layoutManager = LinearLayoutManager(this@PostsActivity)
+                        posts_recycler_view.adapter = PostsAdapter(this@PostsActivity)
+                    }
+
                 } else {
                     Log.e(POSTS_ACTIVITY_LOG_KEY, "response received, Status code: ${response.code}")
                 }
