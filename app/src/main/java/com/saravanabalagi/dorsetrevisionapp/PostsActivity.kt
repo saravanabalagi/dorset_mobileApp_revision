@@ -1,16 +1,15 @@
 package com.saravanabalagi.dorsetrevisionapp
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_posts.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,27 +18,27 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
         posts_recycler_view.layoutManager = LinearLayoutManager(this)
         posts_recycler_view.adapter = PostsAdapter(this)
 
-        getString(R.string.template_post_content)
+        makeRequest()
+    }
+
+    private fun makeRequest() {
+        val url = "https://jsonplaceholder.typicode.com/posts"
+        val client = okhttp3.OkHttpClient()
+        val request = Request.Builder().url(url).build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i(POSTS_ACTIVITY_LOG_KEY, "Request Failed: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful && response.body != null) {
+                    val responseBody = response.body!!.string()
+                    Log.i(POSTS_ACTIVITY_LOG_KEY, "response received: $responseBody")
+                } else {
+                    Log.i(POSTS_ACTIVITY_LOG_KEY, "response received, Status code: ${response.code}")
+                }
+            }
+        })
+
     }
 }
-
-class PostsAdapter(private val context: Context): RecyclerView.Adapter<PostViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val inflater: LayoutInflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.template_post, parent, false)
-        return PostViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val postContent = holder.itemView.findViewById<TextView>(R.id.post_content)
-        if (position > 3) {
-            postContent.text = context.getString(R.string.template_post_content, position)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return 15
-    }
-}
-
-class PostViewHolder(v: View): RecyclerView.ViewHolder(v) {}
