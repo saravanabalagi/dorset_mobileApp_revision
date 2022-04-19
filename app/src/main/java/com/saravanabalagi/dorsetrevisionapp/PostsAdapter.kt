@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.saravanabalagi.dorsetrevisionapp.models.Post
+import com.saravanabalagi.dorsetrevisionapp.models.User
 
-class PostsAdapter(private val posts: Array<Post>, private val context: Context): RecyclerView.Adapter<PostViewHolder>() {
+class PostsAdapter(private val posts: Array<Post>, private val users: Array<User>, private val context: Context): RecyclerView.Adapter<PostViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.template_post, parent, false)

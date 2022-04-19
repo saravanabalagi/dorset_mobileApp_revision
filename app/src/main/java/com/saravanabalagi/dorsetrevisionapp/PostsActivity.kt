@@ -10,30 +10,53 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.saravanabalagi.dorsetrevisionapp.models.Post
+import com.saravanabalagi.dorsetrevisionapp.models.User
 import kotlinx.android.synthetic.main.activity_posts.*
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import java.io.IOException
 
 class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
+
+    private lateinit var client: OkHttpClient
+    private lateinit var users: Array<User>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        client = OkHttpClient()
+        makeUsersRequest()
         Handler(Looper.getMainLooper()).postDelayed({
-            makeRequest()
+            makePostsRequest()
         }, 2000)
 
     }
 
-    private fun makeRequest() {
-        val url = "https://jsonplaceholder.typicode.com/posts"
-        val client = okhttp3.OkHttpClient()
+    private fun makeUsersRequest() {
+        val url = "https://jsonplaceholder.typicode.com/users"
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object: Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e(POSTS_ACTIVITY_LOG_KEY, "Request Failed: ${e.message}")
+                Log.e(POSTS_ACTIVITY_LOG_KEY, "UsersRequest Failed: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful && response.body != null) {
+                    val responseBody = response.body!!.string()
+                    users = Gson().fromJson(responseBody, Array<User>::class.java)
+                    users.forEach { Log.i(POSTS_ACTIVITY_LOG_KEY, it.toString()) }
+                } else {
+                    Log.e(POSTS_ACTIVITY_LOG_KEY, "Users response received, Status code: ${response.code}")
+                }
+            }
+        })
+    }
+
+    private fun makePostsRequest() {
+        val url = "https://jsonplaceholder.typicode.com/posts"
+        val request = Request.Builder().url(url).build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(POSTS_ACTIVITY_LOG_KEY, "PostsRequest Failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -49,11 +72,11 @@ class PostsActivity: AppCompatActivity(R.layout.activity_posts) {
                         loading_text.visibility = View.GONE
                         posts_recycler_view.visibility = View.VISIBLE
                         posts_recycler_view.layoutManager = LinearLayoutManager(this@PostsActivity)
-                        posts_recycler_view.adapter = PostsAdapter(posts, this@PostsActivity)
+                        posts_recycler_view.adapter = PostsAdapter(posts, users, this@PostsActivity)
                     }
 
                 } else {
-                    Log.e(POSTS_ACTIVITY_LOG_KEY, "response received, Status code: ${response.code}")
+                    Log.e(POSTS_ACTIVITY_LOG_KEY, "Posts response received, Status code: ${response.code}")
                 }
             }
         })
